@@ -1,0 +1,13 @@
+langchain
+langchain-community
+langchain-openai
+azure-identity
+azure-search-documents
+python-dotenv
+fastapi
+uvicorn
+pdfplumber
+pyodbc
+pdf2image
+pytesseract
+azure-ai-documentintelligence

@@ -1,0 +1,86 @@
+Table: TransmissionWorkOrder  
+Description: Main table for transmission work orders.
+- TransmissionWorkOrderID (int) : Primary key.
+- WorkOrderNo (varchar) : Human-readable work order number.
+- JobNumber (varchar) : Associated job number.
+- Location (varchar) : Physical location of work.
+- City (varchar) : City where work is performed.
+- IsActive (bit) : 1 for active records 0 for inactive records. Always consider IsActive=1
+
+Table: TransmissionISO  
+Description: Links work orders to ISO documents.
+- TransmissionISOID (int) : Primary key.
+- TransmissionWorkOrderID (int) : Foreign key to TransmissionWorkOrder.
+- IsActive (bit) : 1 for active records 0 for inactive records.Always consider IsActive=1
+
+
+Table: TransmissionISOMainJoint  
+Description: Contains weld/joint information with connections to two MTR files and two heat numbers (assets).
+- TransmissionISOMainJointID (int) : Primary key.
+- TransmissionISOID (int) : Foreign key to TransmissionISO.
+- JointID (varchar) : Weld/joint identifier (weld number).
+- SegCompField1MTRFileID (int) : First MTR file reference ID (priority connection to CompanyMTRFile). If 0, use SegCompFieldID1.
+- SegCompFieldID1 (varchar) : First heat number (fallback connection when SegCompField1MTRFileID = 0).
+- SegCompField2MTRFileID (int) : Second MTR file reference ID (priority connection to CompanyMTRFile). If 0, use SegCompFieldID2.
+- SegCompFieldID2 (varchar) : Second heat number (fallback connection when SegCompField2MTRFileID = 0).
+- IsActive (bit) : 1 for active records 0 for inactive records.Always consider IsActive=1
+- IsCutout (varchar) : Indicates if this joint is a cutout (Yes/''). Default active records where IsCutout is ''.
+
+Table: CompanyMTRFile  
+Description: Material Test Reports containing asset details for both components of a joint.
+- CompanyMTRFileID (int) : Primary key (connects to SegCompField1MTRFileID/SegCompField2MTRFileID).
+- AssetCategoryID (int) : Links to AssetCategoryMaster.
+- AssetSubCategoryID (int) : Links to subcategory if applicable.
+- MaterialID (int) : Links to MaterialMaster.
+- ManufacturerID (int) : Links to ManufacturerMaster.
+- BinaryString (varbinary) : PDF content of MTR.
+- HeatNumber (varchar) : Semicolon-separated heat numbers (fallback connection to SegCompFieldID1/SegCompFieldID2).
+- IsActive (bit) : 1 for active records 0 for inactive records.
+
+Table: AssetCategoryMaster  
+Description: Asset category reference data.
+- AssetCategoryID (int) : Primary key.
+- AssetCategoryDescription (varchar) : Category description.
+
+Table: SizeMaster  
+Description: Size reference data.
+- SizeID (int) : Primary key.
+- SizeDescription (varchar) : Size description.
+
+Table: MaterialMaster  
+Description: Material reference data.
+- MaterialID (int) : Primary key.
+- MaterialDescription (varchar) : Material description.
+
+Table: ManufacturerMaster  
+Description: Manufacturer reference data.
+- ManufacturerID (int) : Primary key.
+- ManufacturerName (varchar) : Manufacturer name.
+
+### Relationships:
+
+- `TransmissionWorkOrder.TransmissionWorkOrderID` → `TransmissionISO.TransmissionWorkOrderID` : Links work orders to their ISO documents
+- `TransmissionISO.TransmissionISOID` → `TransmissionISOMainJoint.TransmissionISOID` : Links ISO documents to individual joints/welds
+- `TransmissionISOMainJoint.SegCompField1MTRFileID` → `CompanyMTRFile.CompanyMTRFileID` : Primary connection using MTR File IDs (when SegCompField1MTRFileID != 0)
+- `TransmissionISOMainJoint.SegCompField2MTRFileID` → `CompanyMTRFile.CompanyMTRFileID` : Primary connection using MTR File IDs (when SegCompField2MTRFileID != 0)
+- `CompanyMTRFile.HeatNumber LIKE '%' + TransmissionISOMainJoint.SegCompFieldID1 + '%'` : Fallback connection using heat numbers (when SegCompField1MTRFileID = 0)
+- `CompanyMTRFile.HeatNumber LIKE '%' + TransmissionISOMainJoint.SegCompFieldID2 + '%'` : Fallback connection using heat numbers (when SegCompField2MTRFileID = 0)
+- `CompanyMTRFile.AssetCategoryID` → `AssetCategoryMaster.AssetCategoryID` : Gets category details for MTR assets
+- `CompanyMTRFile.SizeID` → `SizeMaster.SizeID` : Gets size details for MTR assets
+- `CompanyMTRFile.MaterialID` → `MaterialMaster.MaterialID` : Gets material details for MTR assets
+- `CompanyMTRFile.ManufacturerID` → `ManufacturerMaster.ManufacturerID` : Gets manufacturer details for MTR assets
+
+### Business Rules:
+- Always filter for IsActive = 1 unless showing historical data
+- Each JointID (weld number) connects to exactly two assets/components:
+  - Primary component (SegCompField1MTRFileID/SegCompFieldID1)
+  - Secondary component (SegCompField2MTRFileID/SegCompFieldID2)
+- For each component, use this lookup priority when joining to CompanyMTRFile:
+  1. First try using the MTR File ID reference (SegCompField1MTRFileID or SegCompField2MTRFileID) if it is not 0
+  2. If the MTR File ID is 0, fallback to the heat number (SegCompFieldID1 or SegCompFieldID2) using LIKE comparison with CompanyMTRFile.HeatNumber
+- The HeatNumber field in CompanyMTRFile may contain multiple values separated by semicolons - match must be exact within this list
+- Always use LEFT JOIN when falling back to heat number connections
+- When querying material properties, use get_properties_by_joint_or_heat function for both components
+- Both components must be resolved separately - never assume the same MTR file covers both heat numbers
+- For non-cutout joints (IsCutout = ''), both components must be verified against MTR records
+- Important: Only process records where IsCutout = '' (empty string). Records with IsCutout = 'Yes' should be excluded from processing
