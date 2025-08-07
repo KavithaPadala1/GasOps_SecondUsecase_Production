@@ -8,7 +8,7 @@ def classify_intent_llm(user_question: str) -> str:
     Returns a dict: {"type": "direct_answer", "answer": ...} for general questions, or a string intent for SQL-related questions.
     """
     """
-    Always use the LLM to determine if the question is general (and answer directly) or needs SQL/SQL+OCR routing, based on the prompt only.
+    Always use the LLM to determine if the question is general (and answer directly) or needs SQL routing, based on the prompt only.
     """
     from datetime import datetime
     now = datetime.now()
