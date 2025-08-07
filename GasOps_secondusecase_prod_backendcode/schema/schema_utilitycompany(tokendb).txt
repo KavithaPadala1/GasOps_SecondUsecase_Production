@@ -6,6 +6,12 @@ Description: Main table for transmission work orders.
 - Location (varchar) : Physical location of work.
 - City (varchar) : City where work is performed.
 - IsActive (bit) : 1 for active records 0 for inactive records. Always consider IsActive=1
+- ContractorMasterID (bigint) : Maps to the ContractorMaster table to get the ContractorDisplayName
+- ContractorInspectorMasterID (bigint): ContractorInspectorMasterID
+- ContractorRTMasterID (bigint) : ContractorRTMasterID
+- ContractorCRIMasterID (bigint) : ContractorCRIMasterID
+- IsRedig (bit): IsRedig has 0 and 1
+
 
 Table: TransmissionISO  
 Description: Links work orders to ISO documents.
@@ -26,6 +32,7 @@ Description: Contains weld/joint information with connections to two MTR files a
 - IsActive (bit) : 1 for active records 0 for inactive records.Always consider IsActive=1
 - IsCutout (varchar) : Indicates if this joint is a cutout (Yes/''). Default active records where IsCutout is ''.
 
+
 Table: CompanyMTRFile  
 Description: Material Test Reports containing asset details for both components of a joint.
 - CompanyMTRFileID (int) : Primary key (connects to SegCompField1MTRFileID/SegCompField2MTRFileID).
@@ -37,10 +44,12 @@ Description: Material Test Reports containing asset details for both components 
 - HeatNumber (varchar) : Semicolon-separated heat numbers (fallback connection to SegCompFieldID1/SegCompFieldID2).
 - IsActive (bit) : 1 for active records 0 for inactive records.
 
+
 Table: AssetCategoryMaster  
 Description: Asset category reference data.
 - AssetCategoryID (int) : Primary key.
 - AssetCategoryDescription (varchar) : Category description.
+
 
 Table: SizeMaster  
 Description: Size reference data.
@@ -55,7 +64,16 @@ Description: Material reference data.
 Table: ManufacturerMaster  
 Description: Manufacturer reference data.
 - ManufacturerID (int) : Primary key.
-- ManufacturerName (varchar) : Manufacturer name.
+- ManufacturerName (varchar) : Manufacturer name
+
+
+Table : ContractorMaster
+Description : Contractor information
+-  ContractorMasterID (bigint) : Unique identifier for Contractor
+- VenderCode (nvarchar) : Contractor VenderCode 
+- ContractorDisplayName (nvarchar): Contractor display name
+- IsActive (bit) : 1 for active records 0 for inactive records. Always consider IsActive = 1
+
 
 ### Relationships:
 

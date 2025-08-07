@@ -65,7 +65,12 @@ def execute_sql(sql_query, database_name):
         columns = [desc[0] for desc in cursor.description] if cursor.description else []
         # Convert rows to lists for JSON serialization
         rows = [list(row) for row in rows]
-        return columns, rows
+        # print("Results:")
+        for row in rows:
+        #     print(row)
+        # print("Columns:", columns)
+            return columns, rows
+         
     finally:
         conn.close()
 

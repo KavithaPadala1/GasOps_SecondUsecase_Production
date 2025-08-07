@@ -1,0 +1,222 @@
+User : For weld number 251141, what assets were used? 
+-- SQL Query:
+-- Always WeldNumber refers to JointID
+-- return the description for Asset 1 and 2 such as AssetCategory, AssetSubCategory, size, MaterialDescription, ManufacturerName, and HeatNumber
+SELECT
+    mj.JointID AS WeldNumber,
+    cmf.HeatNumber,
+    ac.AssetCategoryDescription AS AssetCategory,
+    asm.SubCategoryDescription AS AssetSubCategory,
+    mm.MaterialDescription AS Material,
+    sm.SizeDescription AS MaterialSize,
+    m.ManufacturerName AS Manufacturer,
+    cmf.FileName
+FROM TransmissionISOMainJoint mj
+JOIN CompanyMTRFile cmf ON
+    (
+        (mj.SegCompField1MTRFileID != 0 AND cmf.CompanyMTRFileID = mj.SegCompField1MTRFileID)
+        OR
+        (
+            mj.SegCompField1MTRFileID = 0 AND (
+                RTRIM(LTRIM(mj.SegCompFieldID1)) IN (
+                    SELECT items FROM dbo.Split(cmf.HeatNumber, ';')
+                )
+                OR
+                cmf.SerialNumber = RTRIM(LTRIM(mj.SegCompFieldID1))
+            )
+        )
+    )
+LEFT JOIN AssetCategoryMaster ac ON cmf.AssetCategoryID = ac.AssetCategoryID
+LEFT JOIN AssetSubCategoryMaster asm ON cmf.AssetSubCategoryID = asm.AssetSubCategoryID
+LEFT JOIN ManufacturerMaster m ON cmf.ManufacturerID = m.ManufacturerID
+LEFT JOIN MaterialMaster mm ON cmf.MaterialID = mm.MaterialID
+LEFT JOIN SizeMaster sm ON cmf.SizeID = sm.SizeID
+WHERE mj.JointID = '251141'  -- replace based on the user question
+AND cmf.IsActive = 1
+UNION ALL
+-- SegCompField2 MTR
+SELECT
+     mj.JointID AS WeldNumber,
+    cmf.HeatNumber,
+    ac.AssetCategoryDescription AS SubCategory,
+    asm.SubCategoryDescription AS AssetSubCategory,
+    mm.MaterialDescription AS Material,
+    sm.SizeDescription AS MaterialSize,
+    m.ManufacturerName AS Manufacturer,
+    cmf.FileName
+FROM TransmissionISOMainJoint mj
+JOIN CompanyMTRFile cmf ON
+    (
+        (mj.SegCompField2MTRFileID != 0 AND cmf.CompanyMTRFileID = mj.SegCompField2MTRFileID)
+        OR
+        (
+            mj.SegCompField2MTRFileID = 0 AND (
+                RTRIM(LTRIM(mj.SegCompFieldID2)) IN (
+                    SELECT items FROM dbo.Split(cmf.HeatNumber, ';')
+                )
+                OR
+                cmf.SerialNumber = RTRIM(LTRIM(mj.SegCompFieldID2))
+            )
+        )
+    )
+LEFT JOIN AssetCategoryMaster ac ON cmf.AssetCategoryID = ac.AssetCategoryID
+LEFT JOIN AssetSubCategoryMaster asm ON cmf.AssetSubCategoryID = asm.AssetSubCategoryID
+LEFT JOIN ManufacturerMaster m ON cmf.ManufacturerID = m.ManufacturerID
+LEFT JOIN MaterialMaster mm ON cmf.MaterialID = mm.MaterialID
+LEFT JOIN SizeMaster sm ON cmf.SizeID = sm.SizeID
+WHERE mj.JointID = '251141'  -- replace based on the user question
+AND cmf.IsActive = 1;
+
+User: what are the assests used for 251079 weld no
+-- SQL Query:
+-- Always WeldNumber refers to JointID
+-- return the description for Asset 1 and 2 such as AssetCategory, AssetSubCategory, size, MaterialDescription, ManufacturerName, and HeatNumber
+SELECT
+    mj.JointID AS WeldNumber,
+    cmf.HeatNumber,
+    ac.AssetCategoryDescription AS AssetCategory,
+    asm.SubCategoryDescription AS AssetSubCategory,
+    mm.MaterialDescription AS Material,
+    sm.SizeDescription AS MaterialSize,
+    m.ManufacturerName AS Manufacturer,
+    cmf.FileName
+FROM TransmissionISOMainJoint mj
+JOIN CompanyMTRFile cmf ON
+    (
+        (mj.SegCompField1MTRFileID != 0 AND cmf.CompanyMTRFileID = mj.SegCompField1MTRFileID)
+        OR
+        (
+            mj.SegCompField1MTRFileID = 0 AND (
+                RTRIM(LTRIM(mj.SegCompFieldID1)) IN (
+                    SELECT items FROM dbo.Split(cmf.HeatNumber, ';')
+                )
+                OR
+                cmf.SerialNumber = RTRIM(LTRIM(mj.SegCompFieldID1))
+            )
+        )
+    )
+LEFT JOIN AssetCategoryMaster ac ON cmf.AssetCategoryID = ac.AssetCategoryID
+LEFT JOIN AssetSubCategoryMaster asm ON cmf.AssetSubCategoryID = asm.AssetSubCategoryID
+LEFT JOIN ManufacturerMaster m ON cmf.ManufacturerID = m.ManufacturerID
+LEFT JOIN MaterialMaster mm ON cmf.MaterialID = mm.MaterialID
+LEFT JOIN SizeMaster sm ON cmf.SizeID = sm.SizeID
+WHERE mj.JointID = '251079'  -- replace based on the user question
+AND cmf.IsActive = 1
+UNION ALL
+-- SegCompField2 MTR
+SELECT
+     mj.JointID AS WeldNumber,
+    cmf.HeatNumber,
+    ac.AssetCategoryDescription AS SubCategory,
+    asm.SubCategoryDescription AS AssetSubCategory,
+    mm.MaterialDescription AS Material,
+    sm.SizeDescription AS MaterialSize,
+    m.ManufacturerName AS Manufacturer,
+    cmf.FileName
+FROM TransmissionISOMainJoint mj
+JOIN CompanyMTRFile cmf ON
+    (
+        (mj.SegCompField2MTRFileID != 0 AND cmf.CompanyMTRFileID = mj.SegCompField2MTRFileID)
+        OR
+        (
+            mj.SegCompField2MTRFileID = 0 AND (
+                RTRIM(LTRIM(mj.SegCompFieldID2)) IN (
+                    SELECT items FROM dbo.Split(cmf.HeatNumber, ';')
+                )
+                OR
+                cmf.SerialNumber = RTRIM(LTRIM(mj.SegCompFieldID2))
+            )
+        )
+    )
+LEFT JOIN AssetCategoryMaster ac ON cmf.AssetCategoryID = ac.AssetCategoryID
+LEFT JOIN AssetSubCategoryMaster asm ON cmf.AssetSubCategoryID = asm.AssetSubCategoryID
+LEFT JOIN ManufacturerMaster m ON cmf.ManufacturerID = m.ManufacturerID
+LEFT JOIN MaterialMaster mm ON cmf.MaterialID = mm.MaterialID
+LEFT JOIN SizeMaster sm ON cmf.SizeID = sm.SizeID
+WHERE mj.JointID = '251079'  -- replace based on the user question
+AND cmf.IsActive = 1;
+
+User : List all weld numbers associated with workorderID 2
+SQL Query:
+-- Always WeldNumber refers to JointID
+SELECT mj.JointID AS WeldNumber
+FROM TransmissionWorkOrder tw 
+INNER JOIN TransmissionISO ti 
+    ON tw.TransmissionWorkOrderID = ti.TransmissionWorkOrderID 
+INNER JOIN TransmissionISOMainJoint mj 
+    ON ti.TransmissionISOID = mj.TransmissionISOID
+WHERE tw.TransmissionWorkOrderID =2 -- replace based on the user question
+AND mj.IsActive=1 AND mj.IsCutout='';
+
+User : can you display all welds for this weld number 100139423P2
+SQL Query:
+SELECT mj.JointID AS WeldNumber, 
+       mj.SegCompFieldID1 AS HeatNumber1,
+       mj.SegCompFieldID2 AS HeatNumber2
+FROM TransmissionWorkOrder tw
+INNER JOIN TransmissionISO ti 
+    ON tw.TransmissionWorkOrderID = ti.TransmissionWorkOrderID AND ti.IsActive = 1
+INNER JOIN TransmissionISOMainJoint mj 
+    ON ti.TransmissionISOID = mj.TransmissionISOID AND mj.IsActive = 1 AND mj.IsCutout = ''
+WHERE tw.WorkOrderNo = '100139423P2' AND tw.IsActive = 1;
+
+User : how many welds are in work order id 23?
+SQL Query:
+-- Always work order id refers to TransmissionWorkOrderID
+SELECT COUNT(DISTINCT mj.JointID)
+FROM TransmissionWorkOrder tw 
+INNER JOIN TransmissionISO ti 
+    ON tw.TransmissionWorkOrderID = ti.TransmissionWorkOrderID 
+INNER JOIN TransmissionISOMainJoint mj 
+    ON ti.TransmissionISOID = mj.TransmissionISOID
+WHERE tw.TransmissionWorkOrderID = '23' -- replace based on the user question
+ AND mj.IsActive=1 AND mj.IsCutout='';
+
+User : for work order 101247898, are there any welds that do NOT have a heat number in the system?
+SQL Query:
+-- Always work order refers to WorkOrderNo
+SELECT mj.JointID
+FROM TransmissionISOMainJoint mj
+JOIN TransmissionISO ti ON mj.TransmissionISOID = ti.TransmissionISOID
+JOIN TransmissionWorkOrder wo ON ti.TransmissionWorkOrderID = wo.TransmissionWorkOrderID
+WHERE wo.WorkOrderNo = '101247898' -- replace based on the user question
+  AND mj.IsActive = 1
+  AND mj.IsCutout = ''
+  AND (
+        (mj.SegCompField1MTRFileID = 0 AND (mj.SegCompFieldID1 IS NULL OR mj.SegCompFieldID1 = ''))
+     OR (mj.SegCompField2MTRFileID = 0 AND (mj.SegCompFieldID2 IS NULL OR mj.SegCompFieldID2 = ''))
+  );
+
+User : for transmission work order id 23, are there any welds that do NOT have a heat number in the system?
+SQL Query:
+-- Always work order id refers to TransmissionWorkOrderID
+SELECT mj.JointID
+FROM TransmissionISOMainJoint mj
+JOIN TransmissionISO ti ON mj.TransmissionISOID = ti.TransmissionISOID
+JOIN TransmissionWorkOrder wo ON ti.TransmissionWorkOrderID = wo.TransmissionWorkOrderID
+WHERE wo.TransmissionWorkOrderID = 23 -- replace based on the user question
+  AND mj.IsActive = 1
+  AND mj.IsCutout = ''
+  AND (
+        (mj.SegCompField1MTRFileID = 0 AND (mj.SegCompFieldID1 IS NULL OR mj.SegCompFieldID1 = ''))
+     OR (mj.SegCompField2MTRFileID = 0 AND (mj.SegCompFieldID2 IS NULL OR mj.SegCompFieldID2 = ''))
+  );
+
+User : Show me all joints for work order 123.
+SQL Query:
+-- Always work order refers to WorkOrderNo
+SELECT JointID
+FROM TransmissionISOMainJoint j
+LEFT JOIN TransmissionISO i ON j.TransmissionISOID = i.TransmissionISOID
+LEFT JOIN TransmissionWorkOrder w ON i.TransmissionWorkOrderID = w.TransmissionWorkOrderID
+WHERE w.WorkOrderNo = '123' -- replace based on the user question
+AND j.IsActive = 1 AND j.IsCutout = '';
+
+User : Show me all joints for Job Number G-23-901.
+SQL Query:
+SELECT JointID
+FROM TransmissionISOMainJoint j
+LEFT JOIN TransmissionISO i ON j.TransmissionISOID = i.TransmissionISOID
+LEFT JOIN TransmissionWorkOrder w ON i.TransmissionWorkOrderID = w.TransmissionWorkOrderID
+WHERE w.JobNumber = 'G-23-901' -- replace based on the user question
+AND j.IsActive = 1 AND j.IsCutout = '';

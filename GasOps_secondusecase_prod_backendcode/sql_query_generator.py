@@ -151,7 +151,7 @@ azure_chat = get_azure_chat_openai()
 openai.api_key = os.getenv("AZURE_OPENAI_API_KEY")
 
 # Define the path to the schema file
-SCHEMA_PATH = os.path.join(os.path.dirname(__file__), "schema", "schema_CEDEMONEW0314.txt")
+SCHEMA_PATH = os.path.join(os.path.dirname(__file__), "schema", "schema_utilitycompany(tokendb).txt")
 
 # Function to load the schema from the file
 def load_schema():
@@ -196,9 +196,11 @@ Please use the following examples as reference to generate the SQL query:
 - When no date specified use the current year {current_year}.
 - Always include 'WHERE IsActive = 1' for ALL tables that have this column.
 - Always include 'WHERE IsCutout = ''' for ALL tables that have this column.
-- Never display these columns to users: 'WorkActivityFunctionID', 'IsActive', 'IsDeleted'
+- Never display these columns to users: 'WorkActivityFunctionID', 'IsActive', 'IsDeleted', 'VenderCode'.
 - Always alias 'JointID' as 'WeldNumber'.
 - For multi-row subqueries, use IN rather than '='
+- **If the user provides a ContractorDisplayName (e.g., 'CAC', 'ECI', 'BANCKER'), first look up the corresponding VenderCode from the ContractorMaster table, then use that VenderCode in your query. Never assume ContractorDisplayName equals VenderCode.**
+
 
     **Transmission Database Specific Rules**:
         - **Work Order Queries**:
@@ -212,7 +214,7 @@ Please use the following examples as reference to generate the SQL query:
             - When joining to CompanyMTRFile:
                 - FIRST try using SegCompField1MTRFileID/SegCompField2MTRFileID
                 - If those are 0, fallback to SegCompFieldID1/SegCompField2 (heat numbers). Always use 'HeatNumber' as the column name for heat numbers in CompanyMTRFile.
-            - For Welds/Weld number queries, always include these columns JointID AS WeldNumber,SegCompFieldID1 AS HeatNumber1,SegCompFieldID2 AS HeatNumber2,SegCompField1MTRFileID,SegCompField2MTRFileID.
+            - For Welds/Weld number queries, always include these columns JointID AS WeldNumber,SegCompFieldID1 AS HeatNumber1,SegCompFieldID2 AS HeatNumber2.
             - When the user asks about assets used for a weld number (JointID), do the following:
                 - Always include these columns in the SELECT clause:
                     JointID AS WeldNumber,HeatNumber,AssetCategoryDescription AS AssetCategory,SubCategoryDescription AS AssetSubCategory,MaterialDescription AS Material,SizeDescription AS MaterialSize,ManufacturerName AS Manufacturer
@@ -285,24 +287,25 @@ The raw results are below.
 Columns: {columns}
 Rows: {rows}
 
-Return the results as JSON:
+Return the results as markdown:
 - Never truncate, omit, or summarize the results. Always show all rows returned after executing the SQL query, even if there are more than 100 rows.
-- If there is only one row, DO NOT return the raw column/value mapping. Instead, generate a clear, user-friendly answer as a string and return it in the following format: {{"answer": "<your answer here>"}}. Do not use the column name as the key.
-- If there are multiple rows, return a JSON array of objects, each with column names as keys.
-- If there are no results, explain clearly as an answer to that user question, using the same {{"answer": "..."}} format.
-- Do not add any commentary or extra text in the JSON response.
-- If the results are single row, use clear formatting such as bullet points, lists, or short paragraphs to make the answer easy to read.
+- If there is only one row, generate a clear, user-friendly answer as text explaining the result. Do not create a table for single row results.
+- If there are multiple rows, format them as a markdown table with proper headers and alignment.
+- If there are no results, explain clearly as an answer to that user question.
+- Use clear formatting such as bullet points, lists, or short paragraphs to make single row answers easy to read.
 
 Example (multiple rows):
-[
-  {{"TaskNum": "CE23/24-Hyb", "TaskDesc": "Inspecting the Condition of Exposed Pipe"}},
-  {{"TaskNum": "CE31B-Hyb", "TaskDesc": "Installation of Pipe - Installing Pipe in a Ditch"}}
-]
+These are the tasks and their descriptions: 
+| TaskNum | TaskDesc |
+|---------|----------|
+| CE23/24-Hyb | Inspecting the Condition of Exposed Pipe |
+| CE31B-Hyb | Installation of Pipe - Installing Pipe in a Ditch |
+
 
 Example (single row):
 {{"answer": "There are 134 welds in work order 100139423P2."}}
 
-Return only the JSON, nothing else.
+Return only the markdown formatted result, nothing else.
 """
     return prompt
 
