@@ -11,3 +11,4 @@ pyodbc
 pdf2image
 pytesseract
 azure-ai-documentintelligence
+requests_pkcs12

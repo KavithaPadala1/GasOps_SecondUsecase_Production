@@ -5,6 +5,7 @@ from azure_client import get_azure_chat_openai
 from pdf_extractor import save_pdf_from_binary, save_text_to_file
 from text_extractor import extract_text_from_pdf
 from ocr_llm import ocr_llm_response
+from barcode_llm import barcode_llm
 
 
 async def handle_user_question(user_question: str, database_name: str = None):
@@ -17,6 +18,13 @@ async def handle_user_question(user_question: str, database_name: str = None):
     if isinstance(intent, dict) and intent.get("type") == "direct_answer":
         # Return only the answer in the expected FastAPI response format
         return {"intent": "general", "answer": intent["answer"]}
+
+    # If intent is barcode lookup, invoke barcode_llm
+    if intent == "BARCODE-LOOKUP":
+        # Just call barcode_llm, pass all needed info
+        llm_answer = await barcode_llm(user_question)
+        return {"intent": intent, "answer": llm_answer}
+
 
     if intent == "SQL-Only":
         sql = await generate_sql_with_ai_examples(user_question)
